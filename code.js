@@ -18,5 +18,31 @@
     function getStorageName(year, month) {
         return `cfdi_data[${year}_${month}]`;
     }
-    return { load, getStorageName };
+
+    function endProcess() {
+        let year = yearCtrl.val();
+        let data = getJoinedCSV(year);
+        downloadFile(year+".csv", data, "csv");
+    }
+
+    function getJoinedCSV(year) {
+        let csvArr = [];
+        for (let month = 1; month <= 12; month++) {
+            let csv = localStorage.getItem(getStorageName(year, month));
+            if (csv) csvArr.push(csv);
+        }
+        return csvArr.join('\n');
+    }
+
+    function downloadFile(name, textFile, type) {
+        let content = `data:text/${type || "plain"};charset=utf-8,${textFile}`;
+        let encodedUri = encodeURI(content);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", name);
+        document.body.appendChild(link); // Required for FF
+        link.click();
+    }
+
+    return { load, getStorageName, endProcess, getJoinedCSV, downloadFile };
 })();
