@@ -18,5 +18,20 @@
     function getStorageName(year, month) {
         return `cfdi_data[${year}_${month}]`;
     }
-    return { load, getStorageName };
+
+    function endProcess() {
+        let year = yearCtrl.val();
+        let data = getJoinedCSV(year);
+    }
+
+    function getJoinedCSV(year){
+        let csvArr = [];
+        for (let month = 1; month <= 12; month++) {
+            let csv = localStorage.getItem(getStorageName(year, month));
+            if (csv) csvArr.push(csv);
+        }
+        return csvArr.join('\n');
+    }
+
+    return { load, getStorageName, endProcess, getJoinedCSV };
 })();
