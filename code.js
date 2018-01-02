@@ -24,7 +24,7 @@
         let data = getJoinedCSV(year);
     }
 
-    function getJoinedCSV(year){
+    function getJoinedCSV(year) {
         let csvArr = [];
         for (let month = 1; month <= 12; month++) {
             let csv = localStorage.getItem(getStorageName(year, month));
@@ -33,5 +33,15 @@
         return csvArr.join('\n');
     }
 
-    return { load, getStorageName, endProcess, getJoinedCSV };
+    function downloadFile(name, textFile, type) {
+        let content = `data:text/${type || "plain"};charset=utf-8,${textFile}`;
+        let encodedUri = encodeURI(content);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", name);
+        document.body.appendChild(link); // Required for FF
+        link.click();
+    }
+
+    return { load, getStorageName, endProcess, getJoinedCSV, downloadFile };
 })();
