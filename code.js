@@ -2,7 +2,8 @@
 
     let monthCtrl = $("#ctl00_MainContent_CldFecha_DdlMes");
     let yearCtrl = $("#DdlAnio");
-
+    let UI = {};
+    
     function load() {
         let tbl = $("#ctl00_MainContent_tblResult");
         let csv = tbl.find("tr").map(function (i, trow) {
@@ -22,7 +23,7 @@
     function endProcess() {
         let year = yearCtrl.val();
         let data = getJoinedCSV(year);
-        downloadFile(year+".csv", data, "csv");
+        downloadFile(year + ".csv", data, "csv");
     }
 
     function getJoinedCSV(year) {
@@ -44,5 +45,92 @@
         link.click();
     }
 
-    return { load, getStorageName, endProcess, getJoinedCSV, downloadFile };
+    function createUI() {
+        let ui = createUIControls();
+        createUIMethods(ui);
+        Object.assign(UI, ui);
+    }
+    function createUIControls() {
+        let btnAddMonthCSV = createUIElement({
+            id: "PCTC_agregar_mes",
+            text: "Agregar mes",
+            top: "100px",
+            btnType: "info",
+            click: () => load()
+        });
+        let btnEndProcess = createUIElement({
+            id: "PCTC_end_process",
+            text: "Terminar proceso",
+            top: "150px",
+            btnType: "warning",
+            click: () => endProcess()
+        });
+        let alert = createUIElement({
+            id: "PCTC_messages",
+            text: "Terminar proceso",
+            top: "200px",
+            type: "div",
+            classList: "alert alert-success",
+            click: () => UI.messageVisible(false)
+        });
+        return { alert, btnAddMonthCSV, btnEndProcess };
+    }
+    /**
+     * By default a button.
+     */
+    function createUIElement(properties) {
+        if (!(properties && properties.id)) throw "Property ID must be set to create a button.";
+        properties = Object.assign({
+            top: "100px",
+            right: "10px",
+            type: "button",
+            btnType: "default",
+            classList: "",
+        }, properties);
+
+        var button = document.getElementById(properties.id);
+        // 1. Create the button
+        if (!button) {
+            button = document.createElement(properties.type);
+            // 2. Append somewhere
+            var body = document.getElementsByTagName("body")[0];
+            body.appendChild(button);
+        }
+        // 3. Set Properties
+        button.id = properties.id;
+        button.innerHTML = properties.text;
+        button.style.position = "fixed";
+        button.style.zIndex = 100000;
+        button.style.top = properties.top;
+        button.style.right = properties.right;
+        if (properties.type == "button") properties.classList += " btn btn-" + properties.btnType;
+        if (properties.classList) button.classList += properties.classList;
+        // 4. Add event handler
+
+        if (properties.click) button.addEventListener("click", properties.click);
+        return button;
+    }
+
+    function createUIMethods(ui) {
+        ui.messageVisible = (visible) => {
+            if (visible === undefined) visible = true;
+            ui.alert.style.visibility = visible ? "visible" : "hidden";
+        }
+        let clickToDimiss = "<b> (Clik para ocultar) </b>"
+        ui.setMessage = (msg) => {
+            ui.alert.innerHTML = msg + clickToDimiss;
+            ui.messageVisible();
+        }
+        return ui;
+    }
+
+    function start() {
+        createUI();
+        UI.setMessage("Listo para comenzar.")
+    }
+
+    return {
+        start, load, getStorageName, endProcess, getJoinedCSV, downloadFile,
+        createUI, createUIElement, UI,
+    };
 })();
