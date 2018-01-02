@@ -22,6 +22,7 @@
     function endProcess() {
         let year = yearCtrl.val();
         let data = getJoinedCSV(year);
+        downloadFile(year+".csv", data, "csv");
     }
 
     function getJoinedCSV(year) {
