@@ -1,4 +1,4 @@
-(function () {
+window.PortalCFDI_Tabla_CSV = (function () {
 
     let UI = {};
 
@@ -6,7 +6,7 @@
         let tbl = $("#ctl00_MainContent_tblResult");
         let csv = tbl.find("tr").map(function (i, trow) {
             return $(trow).find("td").map(function (j, tcell) { // map no es el nativo de array, es un obj-array jQuery.
-                return `"${tcell.textContent}"` ; // obtenemos el texto de cada celda, entre comillas
+                return `"${tcell.textContent}"`; // obtenemos el texto de cada celda, entre comillas
             }).get().join(','); // unimos todas las celdas de la fila con comas
         }).get().join('\n'); // unimos las filas de la tabla por saltos de linea
         console.log("result:", csv);
